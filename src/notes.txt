@@ -1,0 +1,23 @@
+Taiyo Williamson
+
+Pt 1: HuffTest.java
+
+I started testing with basic input cases, such as writing a paragraph, or even just putting a single character down. I tested cases with every character on my keyboard, so long as they were exact, they passed the tester. I then tested with different characters in different spots, longer vs shorter text, and cases with only spaces and maybe one letter, etc. 
+
+After, I wanted to test the illegal characters. At first, I would just scatter illegal characters throughout the input and decoded output files, and it skipped over them fine. However, when I tested with consecutive illegal characters, the tester failed to skip over all of them. So, I used recursion and created a method that would check the character then skip over as many as it had to. 
+
+Finally, I tested with files of different lengths. I got an ArrayIndexOutOfBoundsException, so I had to test when chars were null, and then subtract the index from that file accordingly. After I fixed this, the tester could handle all test cases.
+
+
+Pt 2: Encoding and Decoding
+
+I pretty much used the same approach as I explained above to test my encoder and decoder. First, I used sample txt files (length, format, none of that impacts encoder because it returns single-line of 0s and 1s) and checked manually using the codebook.
+
+Then, I would use illegal characters and check if the output encoded file successfully removed them. I also checked whether the program successfully added the EOT character after every output.
+
+For the decoder, my test method was relatively simple. I first started by creating manual encoded files using the codebook, and then would test it. These were relatively small test cases. I then used the encoder program to create longer paragraphs, since I knew the encoder worked properly. 
+
+By using my HuffTest.java, I was easily able to check if my encoder and decoder successfully encoded text and decoded it--even if it had illegal characters.
+
+
+Ultimately, my test data can be separated into a couple different categories. Placement of illegal characters, amount of illegal characters, length of two text files, use of newlines and spaces, and placement/amount of mismatched characters between two text files.

@@ -34,9 +34,147 @@ int inputChar;
 
 `Decode.java` is the fun, juicy part. This requires a binary tree. Because, the codebook only uses 0s and 1s to encode a character, so to decode, the logic goes as follows: It parses the encoded file by reading number by number. If the number is a 0, the traversal pointer goes left--and rules out the character denoted by the 1--and continues. Basically, if a sample character--we'll say 'z'--was encoded to `001001`. The traversal pointer would start at the head. It would visit the left node first: if the node holes a value of `1`, it would go to the right node (because our first value is 0). Then, it eliminates all possibilities in the left subtree. This process repeats and eliminates possible characters until it finds the node equal to the encoded character. By this node, we now know the character has to be 'z'. It writes that down, then repeats with the next set of characters.
 
-### Sample Input/Output
+Here is `Decode.java`'s construction of the binary tree:
+```
+class Tree {
+	//Member class, makes nodes in tree
+	private class Node {
+		int value; 
+		Node left;
+		Node right;
+		//Constructor takes int, assigns node's value
+		Node (int v) {
+			value = v;
+			right = null;
+			left = null;
+		}
+		//Method returns value of node
+		int value() {
+			return value;
+		}
+	}
+	//Create root/head node
+	Node root;
+	//Set root to null 
+	public Tree() {
+		root = null;
+	}
+	//Add method, takes character (int, is in decimal code point format) and String of 1s and 0s
+	//Builds tree
+	void add(int decimalCode, String symbol) {
+		//pointer/current node
+		Node pointer = root;
+		//split into individual 1s and 0s
+		String[] splitSymbol = symbol.split("");
+		//if root is null, set to 3 (or any random value, but != 1 || != 0)
+		if (pointer == null) {
+			pointer = new Node(3);
+			root = pointer;
+		}
+		//for loop, put 1s and 0s from string array splitSymbol into int v
+		int v = 0;
+		for (int i=0; i<splitSymbol.length; i++) {
+			v = Integer.parseInt(splitSymbol[i]);
+			//Moving right if current symbol is 1
+			if (v == 1) {
+				//if the right branch is empty, fill it with int v
+				if (pointer.right == null) {
+					//if just a 1, put int v
+					if (i != splitSymbol.length - 1) {
+						pointer.right = new Node(v);
+					}
+					//if reached final index of input string, put the character num in, create leaf node
+					else {
+						pointer.right = new Node(decimalCode);
+					}
+				}
+				//if pointer.right is not null, and has a value, just set the pointer to that node
+				pointer = pointer.right;
+			}
+			//Moving left if current symbol is 0 
+			//Same as above, but since v == 0, pointer moves to left branch instead
+			if (v == 0) {
+				if (pointer.left == null) {
+					if (i != splitSymbol.length - 1) {
+						pointer.left = new Node(v);
+					}
+					else {
+						pointer.left = new Node(decimalCode);
+					}
+				}
+				pointer = pointer.left;
+			}
+		}
+	}
+```
+
+And then here is how I use the binary tree:
+```
+public String decoder(String input) {
+		//Set pointer to root
+		Node pointer = root;
+		if (pointer == null) {
+			pointer = new Node(3);
+			root = pointer;
+		}
+		//split input so each 0s and 1s go through tree
+		String[] splitInput = input.split("");
+		//Variables
+		int v = 0;
+		String output = ""; 
+		int decimalCode = 0; 
+		char toChar;
+		
+		//for loop, loops through 0s and 1s
+		for (int i=0; i < splitInput.length; i++) {
+			v = Integer.parseInt(splitInput[i]);
+			//if current input is at 1, go through right branch
+			if (v == 1) {
+				//Check that right branch is not empty (shouldn't be unless at leaf node)
+				if (pointer.right != null) {
+					//Set pointer to right branch, set new value of node to decimalCode
+					pointer = pointer.right;
+					decimalCode = pointer.value;
+				}
+				//if reached leaf node
+				if (decimalCode != 0 && decimalCode != 1 && decimalCode != root.value()) {
+					//Convert decimalCode to character conversion, add to output string
+					toChar = (char)decimalCode;
+					output += toChar;
+					//Move the pointer back to the root node, begin conversion for next character
+					pointer = root;
+					//if reached EOT character, break statement and go to end
+					if (decimalCode == 4) {
+						break;
+					}
+				}
+			}
+			//Same as above, but since v == 0, move down to the left branch instead of right branch
+			if (v == 0) {
+				if (pointer.left != null) {
+					pointer = pointer.left;
+					decimalCode = pointer.value;
+				}
+				if (decimalCode != 0 && decimalCode != 1 && decimalCode != root.value()) {
+					toChar = (char)decimalCode;
+					output += toChar;
+					pointer = root;
+					if (decimalCode == 4) {
+						break;
+					}
+				}
+			}
+ 		}
+		//return final output
+		return output;
+	}
+```
+
+## Sample Input/Output
 
 <img width="1285" alt="Screenshot 2024-03-09 at 4 06 06 PM" src="https://github.com/taiyyoson/binaryEncoder/assets/123409233/d55d1089-a5bb-40c7-8d46-86a160fd6b63">
 
 Here, `test.txt` is the input file. Notice the illegal characters at the end. When those get fed into `Encode.java`, those do not get encoded. The encoded output is `output.txt`. 
 
+### Notes
+Haha apologies for inserting entire code blocks, I know you can see these simply by accessing my src directory. I was just excited to share my work. THANKS for reading!
